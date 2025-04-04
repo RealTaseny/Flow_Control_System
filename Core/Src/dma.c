@@ -36,7 +36,7 @@
 /**
   * Enable DMA controller clock
   */
-void MX_DMA_Init(void)
+void system_dma_init(void)
 {
 
   /* DMA controller clock enable */

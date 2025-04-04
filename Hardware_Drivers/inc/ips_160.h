@@ -7,6 +7,9 @@
 #include "zf_common_function.h"
 #include "font.h"
 #include "fatfs.h"
+#include "tim.h"
+
+#define USE_IPS_ASSERT 1
 
 #define IPS160_SPI_PORT (&hspi2)
 
@@ -42,6 +45,7 @@ typedef enum
 
 void    ips160_clear                    (void);
 void    ips160_full                     (uint16_t color);
+void    ips160_set_brightness           (uint8_t brightness);
 void    ips160_set_dir                  (ips160_dir_enum dir);
 void    ips160_set_color                (uint16_t pen, uint16_t bgcolor);
 void    ips160_draw_point               (uint16_t x, uint16_t y, uint16_t color);

@@ -21,7 +21,7 @@ void peripheral_init(void)
     //system_spi2_init();
 
     ips160_init();
-
+    ips160_set_brightness(20);
 
     //HAL_UART_Receive_IT(&huart1, &rx_data, 1);
 

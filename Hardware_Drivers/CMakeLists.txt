@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 
-enable_language(C)
+enable_language(C ASM)
 
 aux_source_directory(./src Hardware_Drivers_Srcs)
 

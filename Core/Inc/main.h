@@ -93,6 +93,8 @@ void Error_Handler(void);
 #define IPS_DC_GPIO_Port GPIOB
 #define IPS_MOSI_Pin GPIO_PIN_15
 #define IPS_MOSI_GPIO_Port GPIOB
+#define IPS_BRIGHTNESS_Pin GPIO_PIN_8
+#define IPS_BRIGHTNESS_GPIO_Port GPIOA
 #define VAVLE_CONTROL_Pin GPIO_PIN_3
 #define VAVLE_CONTROL_GPIO_Port GPIOB
 #define Flowcounter_Pin GPIO_PIN_4
