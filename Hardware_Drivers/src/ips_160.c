@@ -26,6 +26,12 @@ static void ips160_write_8bit_data (const uint8_t dat)
 	spi2_tx_complete = 0;
 }
 
+void ips160_set_brightness(uint8_t brightness)
+{
+	if (brightness > 99) brightness = 99;
+	__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, brightness);
+}
+
 void ips160_write_16bit_data(const uint16_t dat) {
     uint8_t data[2];
     data[0] = (dat >> 8) & 0xFF;
@@ -372,6 +378,8 @@ void ips160_show_wave (uint16_t x, uint16_t y, const uint16_t *wave, uint16_t wi
 
 void ips160_init(void)
 {
+	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);								//开启屏幕背光输出PWM
+
 	ips160_set_dir(ips160_display_dir);
 	ips160_set_color(ips160_pencolor, ips160_bgcolor);
 

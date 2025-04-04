@@ -97,7 +97,7 @@ void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTaskName)
   * @param  None
   * @retval None
   */
-void MX_FREERTOS_Init(void) {
+void freertos_init(void) {
   /* USER CODE BEGIN Init */
 
   /* USER CODE END Init */

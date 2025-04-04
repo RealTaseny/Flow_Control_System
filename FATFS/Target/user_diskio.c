@@ -38,9 +38,20 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
+#include "w25qxx_flash.h"
+
+#define SPI_FLASH 0
+
+/**
+ * 对于SPI Flash而言， Fatfs需要设置正确的扇区大小与Block Size才能正常使用f_mkfs()函数
+ */
+#define W25Q128_SECTOR_COUNT 4096
+#define W25Q128_SECTOR_SIZE 4096
+#define W25Q128_BLOCK_SIZE 1
 
 /* Private variables ---------------------------------------------------------*/
 /* Disk status */
+
 static volatile DSTATUS Stat = STA_NOINIT;
 
 /* USER CODE END DECL */
@@ -81,8 +92,16 @@ DSTATUS USER_initialize (
 )
 {
   /* USER CODE BEGIN INIT */
-    Stat = STA_NOINIT;
+  Stat = STA_NOINIT;
+  switch (pdrv)
+  {
+
+  case SPI_FLASH:
+    w25qxx_flash_init();
+    Stat = USER_status(SPI_FLASH);
     return Stat;
+  }
+  return Stat;
   /* USER CODE END INIT */
 }
 
@@ -97,6 +116,15 @@ DSTATUS USER_status (
 {
   /* USER CODE BEGIN STATUS */
     Stat = STA_NOINIT;
+  switch (pdrv) {
+
+  case SPI_FLASH:
+    if ((w25qxx_flash_read_ID() & 0XEF00) == 0XEF00)
+      Stat = 0;
+    else
+      Stat = STA_NOINIT;
+    return Stat;
+  }
     return Stat;
   /* USER CODE END STATUS */
 }
@@ -117,7 +145,15 @@ DRESULT USER_read (
 )
 {
   /* USER CODE BEGIN READ */
-    return RES_OK;
+  DRESULT res;
+  switch (pdrv) {
+
+  case SPI_FLASH:
+    w25qxx_flash_read(buff, sector * 4096, count * 4096);
+    res = RES_OK;
+    return res;
+  }
+    return RES_PARERR;
   /* USER CODE END READ */
 }
 
@@ -139,7 +175,17 @@ DRESULT USER_write (
 {
   /* USER CODE BEGIN WRITE */
   /* USER CODE HERE */
-    return RES_OK;
+  DRESULT res;
+
+  switch (pdrv) {
+  case SPI_FLASH:
+    w25qxx_flash_write((uint8_t *)buff, sector * 4096, count * 4096);
+    res = RES_OK;
+
+    return res;
+  }
+
+  return RES_ERROR;
   /* USER CODE END WRITE */
 }
 #endif /* _USE_WRITE == 1 */
@@ -159,8 +205,31 @@ DRESULT USER_ioctl (
 )
 {
   /* USER CODE BEGIN IOCTL */
-    DRESULT res = RES_ERROR;
+  DRESULT res;
+
+  switch (pdrv) {
+  case SPI_FLASH:
+
+    switch (cmd)
+    {
+  case GET_SECTOR_COUNT:
+    *(DWORD *)buff = W25Q128_SECTOR_COUNT;
+      break;
+
+  case GET_SECTOR_SIZE:
+    *(WORD *)buff = W25Q128_SECTOR_SIZE;
+      break;
+
+  case GET_BLOCK_SIZE:
+    *(WORD *)buff = W25Q128_BLOCK_SIZE;
+      break;
+    }
+
+    res = RES_OK;
     return res;
+  }
+
+  return RES_ERROR;
   /* USER CODE END IOCTL */
 }
 #endif /* _USE_IOCTL == 1 */
