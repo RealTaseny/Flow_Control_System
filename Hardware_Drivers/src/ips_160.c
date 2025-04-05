@@ -258,7 +258,24 @@ void ips160_show_string(uint16_t x, uint16_t y, char *ptrStr, uint16_t bgcolor, 
 		else if(ch[0] < 128)
 		{
 			temp_width = get_font_model(ch, &font);
-			if(x < 128) ips160_show_char(x, y, temp_width, font, bgcolor, pencolor);
+
+			if (x >= 160)
+			{
+				x = temp_x;
+				temp_y = temp_y + 12;
+				line_break = 1;
+			}
+			/*当前行显示*/
+			if(line_break == 0)
+			{
+				ips160_show_char(x, y, temp_width, font, bgcolor, pencolor);
+
+			}
+			/*需要换行*/
+			else
+			{
+				ips160_show_char(x, temp_y, temp_width, font, bgcolor, pencolor);
+			}
 			x += temp_width;//下一个字符的横坐标
 		}
 		else if((ch[0] > 160) && (ch[1] > 160))	//中文
