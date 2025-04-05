@@ -59,6 +59,12 @@ void pump_init(void)
     __HAL_TIM_SetCompare(&htim5, TIM_CHANNEL_1, 0);
 }
 
+void pump_sleep_control(uint8_t status)
+{
+    if (status == PUMP_SLEEP) HAL_GPIO_WritePin(PUMP_NSLEEP_GPIO, PUMP_NSLEEP_PIN, GPIO_PIN_RESET);
+    else if (status == PUMP_WORK) HAL_GPIO_WritePin(PUMP_NSLEEP_GPIO, PUMP_NSLEEP_PIN, GPIO_PIN_SET);
+}
+
 void set_pump_flow(int16_t flow)
 {
     if (flow >= 0)
