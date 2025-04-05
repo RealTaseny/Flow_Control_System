@@ -8,6 +8,7 @@ TIM_HandleTypeDef htim5;
 
 void pump_init(void)
 {
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
     TIM_MasterConfigTypeDef sMasterConfig = {0};
     TIM_OC_InitTypeDef sConfigOC = {0};
     htim5.Instance = TIM5;
@@ -34,27 +35,14 @@ void pump_init(void)
     {
         Error_Handler();
     }
-    GPIO_InitTypeDef GPIO_InitStruct = {0};
-    if(htim5.Instance==TIM1)
-    {
-        __HAL_RCC_GPIOA_CLK_ENABLE();
-        GPIO_InitStruct.Pin = IPS_BRIGHTNESS_Pin;
-        GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-        GPIO_InitStruct.Pull = GPIO_NOPULL;
-        GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-        GPIO_InitStruct.Alternate = GPIO_AF1_TIM1;
-        HAL_GPIO_Init(IPS_BRIGHTNESS_GPIO_Port, &GPIO_InitStruct);
-    }
-    else if(htim5.Instance==TIM5)
-    {
-        __HAL_RCC_GPIOA_CLK_ENABLE();
-        GPIO_InitStruct.Pin = MOTOR_PWM_Pin;
-        GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-        GPIO_InitStruct.Pull = GPIO_NOPULL;
-        GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-        GPIO_InitStruct.Alternate = GPIO_AF2_TIM5;
-        HAL_GPIO_Init(MOTOR_PWM_GPIO_Port, &GPIO_InitStruct);
-    }
+
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+    GPIO_InitStruct.Pin = MOTOR_PWM_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    GPIO_InitStruct.Alternate = GPIO_AF2_TIM5;
+    HAL_GPIO_Init(MOTOR_PWM_GPIO_Port, &GPIO_InitStruct);
     HAL_TIM_PWM_Start(&htim5, TIM_CHANNEL_1);
     __HAL_TIM_SetCompare(&htim5, TIM_CHANNEL_1, 0);
 }

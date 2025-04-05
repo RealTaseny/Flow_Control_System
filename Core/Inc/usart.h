@@ -28,20 +28,21 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
-/* USER CODE BEGIN Includes */
-
-/* USER CODE END Includes */
-
 extern UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN Private defines */
-
+#define ENABLE_YMODEM 0
+#define UART_BUFFER_SIZE 4096
 /* USER CODE END Private defines */
 
 void system_usart1_init(uint32_t baudrate);
 
 /* USER CODE BEGIN Prototypes */
-
+#if ENABLE_YMODEM == 1
+  extern uint8_t rx_data;
+  extern uint8_t rx_buffer[UART_BUFFER_SIZE];
+  extern uint16_t rx_buffer_index;
+#endif
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

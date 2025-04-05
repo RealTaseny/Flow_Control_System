@@ -25,7 +25,13 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <flow_counter.h>
+#include <stdio.h>
 
+
+#include "ips_160.h"
+#include "vavle.h"
+#include "bat_detect.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -62,7 +68,7 @@ const osThreadAttr_t defaultTask_attributes = {
 
 void StartDefaultTask(void *argument);
 
-void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
+void freertos_init(void); /* (MISRA C 2004 rule 8.1) */
 
 /* Hook prototypes */
 void vApplicationIdleHook(void);
@@ -86,6 +92,8 @@ void vApplicationIdleHook( void )
 /* USER CODE BEGIN 4 */
 void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTaskName)
 {
+  printf("Stack Overflow\n");
+
    /* Run time stack overflow checking is performed if
    configCHECK_FOR_STACK_OVERFLOW is defined to 1 or 2. This hook function is
    called if a stack overflow is detected. */
@@ -142,10 +150,16 @@ void freertos_init(void) {
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
+  ips160_clear();
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+    osDelay(200);
+    //bat_detect_voltage();
+    //bat_detect_remaining();
+    //ips160_show_float(0 ,0, bat_voltage, 6, 3);
+    //ips160_show_float(0 ,12, bat_remaining, 6, 3);
+    printf("Flow: %d, Flow_Speed: %f\r\n", flow_counter, get_flow_speed(200));
   }
   /* USER CODE END StartDefaultTask */
 }

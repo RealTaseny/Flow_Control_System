@@ -11,14 +11,17 @@
 #define BAT_CELL_VOLTAGE_MAX 4.2f
 #define BAT_CELL_VOLTAGE_MIN 3.7f
 
-#define BAT_ADC_NUM 100000
+#define BAT_ADC_NUM 128
 #define FIXED_TOTAL_R (101.3f)
 #define FIXED_R (9.21f)
 #define ADC_VREF (3.32f)
 
 
 void bat_detect_init(void);
-float bat_detect_voltage(void);
-float bat_detect_remaining(void);
+void bat_detect_voltage(void);
+void bat_detect_remaining(void);
+
+extern float bat_voltage;
+extern float bat_remaining;
 
 #endif //BAT_DETECT_H

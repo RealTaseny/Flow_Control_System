@@ -13,15 +13,21 @@
 
 #define FORWARD 0
 #define BACKWARD 1
+#define PUMP_SLEEP 0
+#define PUMP_WORK 1
 
 #define PUMP_NSLEEP_GPIO GPIOC
-#define PUMP_NSLEEP_PIN GPIO_Pin_15
+#define PUMP_NSLEEP_PIN GPIO_PIN_13
 
 #define PUMP_DIR_GPIO GPIOA
-#define PUMP_DIR_PIN GPIO_Pin_1
+#define PUMP_DIR_PIN GPIO_PIN_1
 
 #define PUMP_NSLEEP(x) ((x) == (0) ? (HAL_GPIO_WritePin(PUMP_NSLEEP_GPIO, PUMP_NSLEEP_PIN, GPIO_PIN_RESET)) : (HAL_GPIO_WritePin(PUMP_NSLEEP_GPIO, PUMP_NSLEEP_PIN, GPIO_PIN_SET)))
 #define PUMP_DIR(x) ((x) == (0) ? (HAL_GPIO_WritePin(PUMP_DIR_GPIO, PUMP_DIR_PIN, GPIO_PIN_RESET)) : (HAL_GPIO_WritePin(PUMP_DIR_GPIO, PUMP_DIR_PIN, GPIO_PIN_SET)))
+
+void pump_init(void);
+void pump_sleep_control(uint8_t status);
+void set_pump_flow(int16_t flow);
 
 extern TIM_HandleTypeDef htim5;
 

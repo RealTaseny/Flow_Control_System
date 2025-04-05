@@ -57,11 +57,11 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define ON_OFF_KEY_Pin GPIO_PIN_13
+#define ON_OFF_KEY_Pin GPIO_PIN_15
 #define ON_OFF_KEY_GPIO_Port GPIOC
 #define POWER_CONTROL_Pin GPIO_PIN_14
 #define POWER_CONTROL_GPIO_Port GPIOC
-#define MOTOR_NSLEEP_Pin GPIO_PIN_15
+#define MOTOR_NSLEEP_Pin GPIO_PIN_13
 #define MOTOR_NSLEEP_GPIO_Port GPIOC
 #define MOTOR_PWM_Pin GPIO_PIN_0
 #define MOTOR_PWM_GPIO_Port GPIOA

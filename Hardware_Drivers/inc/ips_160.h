@@ -10,6 +10,7 @@
 #include "tim.h"
 
 #define USE_IPS_ASSERT 1
+#define DISPLAY_DELAY 1000
 
 #define IPS160_SPI_PORT (&hspi2)
 
@@ -64,6 +65,8 @@ void    ips160_show_rgb565_image        (uint16_t x, uint16_t y, const uint16_t 
 void    ips160_show_wave                (uint16_t x, uint16_t y, const uint16_t *wave, uint16_t width, uint16_t value_max, uint16_t dis_width, uint16_t dis_value_max);
 
 void    ips160_init											(void);
+
+extern char display_string_buffer[128];
 
 #endif
 

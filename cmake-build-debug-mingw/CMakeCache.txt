@@ -121,7 +121,7 @@ CMAKE_FIND_PACKAGE_REDIRECTS_DIR:STATIC=G:/STM32_Projects/Flow_Control_System/cm
 CMAKE_INSTALL_PREFIX:PATH=C:/Program Files (x86)/Flow_Control_System
 
 //make program
-CMAKE_MAKE_PROGRAM:FILEPATH=D:/JETBRA~1/CLION2~1.3/bin/ninja/win/x64/ninja.exe
+CMAKE_MAKE_PROGRAM:FILEPATH=D:/JetBrains/CLion 2024.3.3/bin/ninja/win/x64/ninja.exe
 
 //Flags used by the linker during the creation of modules during
 // all build types.
@@ -338,7 +338,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=4
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=5
 //ADVANCED property for variable: CMAKE_OBJDUMP
 CMAKE_OBJDUMP-ADVANCED:INTERNAL=1
 //Platform information initialized

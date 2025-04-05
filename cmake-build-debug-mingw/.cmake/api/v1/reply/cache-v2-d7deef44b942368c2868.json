@@ -703,7 +703,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "D:/JETBRA~1/CLION2~1.3/bin/ninja/win/x64/ninja.exe"
+			"value" : "D:/JetBrains/CLion 2024.3.3/bin/ninja/win/x64/ninja.exe"
 		},
 		{
 			"name" : "CMAKE_MODULE_LINKER_FLAGS",
@@ -811,7 +811,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "4"
+			"value" : "5"
 		},
 		{
 			"name" : "CMAKE_OBJDUMP",

@@ -21,7 +21,15 @@
 #include "usart.h"
 
 /* USER CODE BEGIN 0 */
+#include <unistd.h>
+#include <string.h>
+#include "ymodem.h"
 
+#if ENABLE_YMODEM == 1
+uint8_t rx_data;
+uint8_t rx_buffer[UART_BUFFER_SIZE];
+uint16_t rx_buffer_index;
+#endif
 /* USER CODE END 0 */
 
 UART_HandleTypeDef huart1;
@@ -115,5 +123,77 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 }
 
 /* USER CODE BEGIN 1 */
+int _write(int file, char *ptr, int len) {
+  (void)file;
+  HAL_UART_Transmit(&huart1, (const uint8_t *)ptr, len, HAL_MAX_DELAY);
+  return len;
+}
 
+
+/**
+  * @brief This function handles USART1 global interrupt.
+  */
+void USART1_IRQHandler(void)
+{
+  /* USER CODE BEGIN USART1_IRQn 0 */
+
+  /* USER CODE END USART1_IRQn 0 */
+  HAL_UART_IRQHandler(&huart1);
+  /* USER CODE BEGIN USART1_IRQn 1 */
+#if ENABLE_YMODEM == 1
+
+  packet_revieved = 0;
+  if (rx_buffer_index < UART_BUFFER_SIZE - 1)
+  {
+    if (!packet_start && rx_data == EOT)
+    {
+      packet_revieved = 1;
+      ymodem_receive_packet[0] = rx_data;
+    }
+
+    if (!packet_start && (rx_data == SOH || rx_data == STX))
+    {
+      packet_start = 1;
+    }
+
+    if (packet_start)
+    {
+      rx_buffer[rx_buffer_index] = rx_data;
+      rx_buffer_index++;
+      if (!packet_revieved)
+      {
+        if (rx_buffer[0] == SOH && rx_buffer_index == PACKET_SIZE_128 + PACKET_OVERHEAD)
+        {
+          packet_start = 0;
+          packet_revieved = 1;
+          memcpy(ymodem_receive_packet, rx_buffer, PACKET_SIZE_128 + PACKET_OVERHEAD);
+          rx_buffer_index = 0;
+          memset(rx_buffer, 0, sizeof(rx_buffer));
+        }
+
+        if (rx_buffer[0] == STX && rx_buffer_index == PACKET_SIZE_1024 + PACKET_OVERHEAD)
+        {
+          packet_start = 0;
+          packet_revieved = 1;
+          memcpy(ymodem_receive_packet, rx_buffer, PACKET_SIZE_1024 + PACKET_OVERHEAD);
+          rx_buffer_index = 0;
+          memset(rx_buffer, 0, sizeof(rx_buffer));
+        }
+      }
+    }
+  }
+
+  else
+  {
+    printf("\r\nERROR:Get the Max UART rx buffer!\r\n");
+    rx_buffer_index = 0;
+    memset(rx_buffer, 0, sizeof(rx_buffer));
+  }
+  HAL_UART_Receive_IT(&huart1, &rx_data, 1);
+#endif
+  /* USER CODE END USART1_IRQn 1 */
+}
+/* USER CODE BEGIN 1 */
+
+/* USER CODE END 1 */
 /* USER CODE END 1 */

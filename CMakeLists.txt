@@ -41,6 +41,7 @@ add_executable(${CMAKE_PROJECT_NAME})
 add_subdirectory(cmake/stm32cubemx)
 add_subdirectory(Hardware_Drivers)
 add_subdirectory(zf_libraries)
+add_subdirectory(ymodem)
 
 # Link directories setup
 target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE

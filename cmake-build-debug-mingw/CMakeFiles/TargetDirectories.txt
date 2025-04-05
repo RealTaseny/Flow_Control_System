@@ -10,3 +10,5 @@ G:/STM32_Projects/Flow_Control_System/cmake-build-debug-mingw/Hardware_Drivers/C
 G:/STM32_Projects/Flow_Control_System/cmake-build-debug-mingw/Hardware_Drivers/CMakeFiles/rebuild_cache.dir
 G:/STM32_Projects/Flow_Control_System/cmake-build-debug-mingw/zf_libraries/CMakeFiles/edit_cache.dir
 G:/STM32_Projects/Flow_Control_System/cmake-build-debug-mingw/zf_libraries/CMakeFiles/rebuild_cache.dir
+G:/STM32_Projects/Flow_Control_System/cmake-build-debug-mingw/ymodem/CMakeFiles/edit_cache.dir
+G:/STM32_Projects/Flow_Control_System/cmake-build-debug-mingw/ymodem/CMakeFiles/rebuild_cache.dir

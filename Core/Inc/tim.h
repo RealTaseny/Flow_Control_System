@@ -42,9 +42,7 @@ extern TIM_HandleTypeDef htim3;
 
 /* USER CODE END Private defines */
 
-void system_tim1_init(void);
-void system_tim3_init(void);
-void system_tim5_init(void);
+void ips_pwm_init(void);
 
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 

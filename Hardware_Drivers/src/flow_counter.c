@@ -50,13 +50,13 @@ void flow_counter_init(void)
 
 static void get_flow_counter(void)
 {
-	flow_counter = flow_counter + (__HAL_TIM_GetCounter(&htim3));
+	flow_counter += (__HAL_TIM_GetCounter(&htim3));
 	__HAL_TIM_SetCounter(&htim3, 0);
 }
 
-void get_flow_speed(float *flow_speed, uint8_t get_times_ms)
+float get_flow_speed(uint16_t get_times_ms)
 {
     flow_counter_last = flow_counter;
     get_flow_counter();
-    *flow_speed = (float)(flow_counter - flow_counter_last) / ((float)get_times_ms * FLOW_COUNT_PER_L);
+    return (float)(flow_counter - flow_counter_last) * 60000.0f / ((float)get_times_ms * FLOW_COUNT_PER_L);
 }

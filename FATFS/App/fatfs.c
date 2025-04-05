@@ -216,6 +216,12 @@ FRESULT scan_tree(const char* path, uint8_t depth) {
     return res;
 }
 
+// 用户调用入口
+FRESULT tree(const char* root_path) {
+    return scan_tree(root_path, 0);
+}
+
+#endif
 /* USER CODE END Variables */
 
 void fatfs_init(void)
@@ -224,23 +230,30 @@ void fatfs_init(void)
   retUSER = FATFS_LinkDriver(&USER_Driver, USERPath);
 
   /* USER CODE BEGIN Init */
-  retUSER = f_mount(&USERFatFS,  "FLSH:",  1);   //挂载文件系统
+  retUSER = f_mount(&USERFatFS,  "FLASH:",  1);   //挂载文件系统
   if (retUSER == FR_OK)
+  {
+#if USE_IPS_ASSERT == 1
       ips160_show_string(0, 0, "Mounted success", RGB565_WHITE, RGB565_RED);
+      HAL_Delay(DISPLAY_DELAY);
+#endif
+      (void)retUSER;
+  }
   else if (retUSER == FR_NO_FILESYSTEM)
   {
 #if USE_IPS_ASSERT == 1
-      ips160_show_string(0, 0, "FR_NO_Filesystem Error\nmake filesystem...", RGB565_WHITE, RGB565_RED);
+      ips160_show_string(0, 0, "FR_NO_Filesystem Error make filesystem...", RGB565_WHITE, RGB565_RED);
 #endif
       BYTE *work = malloc(sizeof(BYTE) * _MAX_SS);
       retUSER = f_mkfs("FLASH:", FM_FAT, _MAX_SS, work, _MAX_SS);
       free(work);
+      work = NULL;
 #if USE_IPS_ASSERT == 1
-      if (retUSER == FR_OK) ips160_show_string(0, 24, "Make filesystem done\ntrying to remount SPI Flash...", RGB565_WHITE, RGB565_RED);
+      if (retUSER == FR_OK) ips160_show_string(0, 24, "Make filesystem done trying to remount SPI Flash...", RGB565_WHITE, RGB565_RED);
       else
       {
-          ips160_show_string(0 ,24, "Make filesystem error\nerror code:", RGB565_WHITE, RGB565_RED);
-          ips160_show_uint(66 , 36, retUSER, 2);
+          sprintf(display_string_buffer, "Make filesystem error code:%d", retUSER);
+          ips160_show_string(0 ,24, display_string_buffer, RGB565_WHITE, RGB565_RED);
       }
 #endif
     retUSER = f_mount(&USERFatFS, "FLASH:", 1);
@@ -248,9 +261,10 @@ void fatfs_init(void)
     if (retUSER == FR_OK) ips160_show_string(0 , 48, "Successfully mount filesystem", RGB565_WHITE, RGB565_RED);
     else
     {
-        ips160_show_string(0 , 48,"Mount filesystem error\nerror code:", RGB565_WHITE, RGB565_RED);
-        ips160_show_uint(66 , 60, retUSER, 2);
+        sprintf(display_string_buffer, "Mount filesystem error code:%d", retUSER);
+        ips160_show_string(0 , 48,display_string_buffer, RGB565_WHITE, RGB565_RED);
     }
+      HAL_Delay(DISPLAY_DELAY);
 #endif
   }
 #if USE_IPS_ASSERT == 1
@@ -258,8 +272,10 @@ void fatfs_init(void)
   {
       ips160_show_string(0 , 0,"Mount filesystem error\nerror code:", RGB565_WHITE, RGB565_RED);
       ips160_show_uint(66 , 12, retUSER, 2);
+      HAL_Delay(DISPLAY_DELAY);
   }
 #endif
+
   /* USER CODE END Init */
 }
 

@@ -30,6 +30,8 @@
 /* USER CODE BEGIN Includes */
 #include "ips_160.h"
 #include <stdlib.h>
+#include <string.h>
+
 /* USER CODE END Includes */
 
 extern uint8_t retUSER; /* Return value for USER */
@@ -38,6 +40,13 @@ extern FATFS USERFatFS; /* File system object for USER logical drive */
 extern FIL USERFile; /* File object for USER */
 
 void fatfs_init(void);
+
+#if ENABLE_YMODEM == 1
+FRESULT create_file(const char* path);
+FRESULT delete_files(const char* path);
+FRESULT scan_tree(const char* path, uint8_t depth);
+FRESULT tree(const char* root_path);
+#endif
 
 /* USER CODE BEGIN Prototypes */
 

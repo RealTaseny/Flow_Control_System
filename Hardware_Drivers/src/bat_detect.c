@@ -4,7 +4,14 @@
 
 #include "bat_detect.h"
 
-#include <stdio.h>
+const float alpha_voltage = 0.01f;
+const float alpha_remaining = 0.1f;
+static float filtered_value_voltage = (float)BAT_CELL_NUM * BAT_CELL_VOLTAGE_MAX;
+static float filtered_value_remaining = 100.0f;
+static float bat_voltage_last = (float)BAT_CELL_NUM * BAT_CELL_VOLTAGE_MAX;
+
+float bat_voltage = 0;
+float bat_remaining = 0;
 
 void bat_detect_init(void)
 {
@@ -34,11 +41,11 @@ void bat_detect_init(void)
     }
 }
 
-float bat_detect_voltage(void)
+void bat_detect_voltage(void)
 {
     float raw_data_sum = 0;
 
-    for (int i = 0; i < BAT_ADC_NUM; i++)
+    for (uint8_t i = 0; i < BAT_ADC_NUM; i++)
     {
         HAL_ADC_Start(&hadc1);
         if (HAL_OK == HAL_ADC_PollForConversion(&hadc1, 10)) raw_data_sum += (float)HAL_ADC_GetValue(&hadc1);
@@ -46,13 +53,16 @@ float bat_detect_voltage(void)
 
     const float raw_data_avg = raw_data_sum / (float)BAT_ADC_NUM;
     bat_voltage_last = filtered_value_voltage > bat_voltage_last ? bat_voltage_last : filtered_value_voltage;
-    filtered_value_voltage = alpha_voltage * FIXED_TOTAL_R * (raw_data_avg / 4096.0f * ADC_VREF / FIXED_R) + (1 - alpha_voltage) * bat_voltage_last;
-    
-    return filtered_value_voltage > bat_voltage_last ? bat_voltage_last : filtered_value_voltage;
+    filtered_value_voltage = alpha_voltage * FIXED_TOTAL_R * (raw_data_avg / 4096.0f * ADC_VREF / FIXED_R) + (1 -
+        alpha_voltage) * bat_voltage_last;
+
+    bat_voltage = filtered_value_voltage > bat_voltage_last ? bat_voltage_last : filtered_value_voltage;
 }
 
-float bat_detect_remaining(void)
+void bat_detect_remaining(void)
 {
-    const float voltage = bat_detect_voltage();
-    return (voltage - (float)BAT_CELL_NUM * BAT_CELL_VOLTAGE_MIN) / ((float)BAT_CELL_NUM * (BAT_CELL_VOLTAGE_MAX - BAT_CELL_VOLTAGE_MIN)) * 100.0f >= 0 ? (voltage - (float)BAT_CELL_NUM * BAT_CELL_VOLTAGE_MIN) / ((float)BAT_CELL_NUM * (BAT_CELL_VOLTAGE_MAX - BAT_CELL_VOLTAGE_MIN)) * 100.0f : 0.0f;
+    filtered_value_remaining = alpha_remaining * (bat_voltage - (float)BAT_CELL_NUM * BAT_CELL_VOLTAGE_MIN) / ((float)
+            BAT_CELL_NUM * (BAT_CELL_VOLTAGE_MAX - BAT_CELL_VOLTAGE_MIN)) * 100.0f + (1 - alpha_remaining) *
+        filtered_value_remaining;
+    bat_remaining = filtered_value_remaining >= 0 ? filtered_value_remaining : 0;
 }

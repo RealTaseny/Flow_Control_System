@@ -19,18 +19,14 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "cmsis_os.h"
-#include "adc.h"
-#include "dma.h"
-#include "fatfs.h"
-#include "spi.h"
-#include "usart.h"
-#include "gpio.h"
+
+
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <string.h>
-#include "ips_160.h"
+#include "fatfs.h"
 #include "peripheral_init.h"
+#include "ymodem.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -75,10 +71,8 @@ int main(void)
   HAL_Init();
   SystemClock_Config();
 
-  MX_ADC1_Init();
-
   peripheral_init();
-
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_14, GPIO_PIN_SET);
   fatfs_init();
 
 #if ENABLE_YMODEM == 1
@@ -93,11 +87,11 @@ int main(void)
   tree("FLASH:");
 #endif
 
-  //osKernelInitialize();
-  //freertos_init();
-  //osKernelStart();
+  osKernelInitialize();
+  freertos_init();
+  osKernelStart();
 
- for (;;);
+  for (;;);
 }
 
 /**
