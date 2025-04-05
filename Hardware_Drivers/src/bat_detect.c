@@ -45,7 +45,9 @@ float bat_detect_voltage(void)
     }
 
     const float raw_data_avg = raw_data_sum / (float)BAT_ADC_NUM;
-    return FIXED_TOTAL_R * (raw_data_avg / 4096.0f * ADC_VREF / FIXED_R);
+
+    filtered_value_raw = alpha * raw_data_avg + (1 - alpha) * filtered_value_raw;
+    return FIXED_TOTAL_R * (filtered_value_raw / 4096.0f * ADC_VREF / FIXED_R);
 }
 
 float bat_detect_remaining(void)
