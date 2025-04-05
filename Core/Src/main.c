@@ -81,9 +81,21 @@ int main(void)
 
   fatfs_init();
 
-  osKernelInitialize();
-  freertos_init();
-  osKernelStart();
+#if ENABLE_YMODEM == 1
+  YmodemFileInfo file_info = {0};
+  YmodemStatus status = ymodem_receive(&file_info, "FLASH:");
+#if USE_IPS_ASSERT == 1
+  ips160_clear();
+  sprintf(display_string_buffer, "File recieve status: %d", status);
+  ips160_show_string(0 ,0, display_string_buffer, RGB565_WHITE , RGB565_RED);
+  HAL_Delay(DISPLAY_DELAY);
+#endif
+  tree("FLASH:");
+#endif
+
+  //osKernelInitialize();
+  //freertos_init();
+  //osKernelStart();
 
  for (;;);
 }
