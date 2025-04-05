@@ -17,6 +17,9 @@
 void peripheral_init(void)
 {
     system_gpio_init();
+
+    POWER_ON();
+
     system_usart1_init(921600);
     setvbuf(stdout, NULL, _IONBF, 0);
 

@@ -72,7 +72,7 @@ int main(void)
   SystemClock_Config();
 
   peripheral_init();
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_14, GPIO_PIN_SET);
+
   fatfs_init();
 
 #if ENABLE_YMODEM == 1
