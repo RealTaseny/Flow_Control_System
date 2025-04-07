@@ -93,13 +93,11 @@ void ips160_clear(void)
     uint16_t color = ips160_bgcolor;
     uint8_t data[ips160_x_max * 2];
 
-
     for (uint16_t i = 0; i < ips160_x_max; i++)
     {
         data[i * 2] = (color >> 8) & 0xFF;
         data[i * 2 + 1] = color & 0xFF;
     }
-
 
     for (uint16_t j = 0; j < ips160_x_max; j++)
     {
@@ -201,109 +199,153 @@ void ips160_draw_line(uint16_t x_start, uint16_t y_start, uint16_t x_end, uint16
     while (0);
 }
 
-static char get_font_model(const char* ch, const uint8_t** font)
-{
-    if ((ch[0] > 0xA0) && (ch[1] > 0xA0)) //中文
-    {
-        *font = &ascii_font_6x8[0][0] + 18 * ((ch[0] - 161) * 94 + ch[1] - 161); //获取此字模的地址
-        return 12;
-    }
-
-    if (*ch >= 0x20) //英文
-    {
-        *font = &ascii_font_6x8[(ch[0] - 0x20)][0];
-        return 6;
-    }
-    *font = &ascii_font_6x8[0][0]; //无法匹配，显示空白
-    return 0;
-}
-
-void ips160_show_char(uint8_t x, uint8_t y, uint8_t width, const uint8_t* font, uint16_t bgcolor, uint16_t pencolor)
+void ips160_show_char(uint8_t x, uint8_t y, uint8_t width, const uint8_t* font, uint16_t bgcolor, uint16_t pencolor, uint8_t show_with_zh)
 {
     uint8_t i, j;
     uint8_t mask;
-    uint8_t height;
 
-    if (width == 6) height = 8;
-    else if (width == 12) height = 16;
-    else height = 0;
-
-    for (i = 0; i < width; i++) //竖着显示，先判断y坐标。
+    if (width == ASCII_WIDTH)
     {
-        ips160_set_region(x + i, y, x + i, y + height);
-        mask = *(font + i);
-        for (j = 0; height > j; j++)
+        for (i = 0; i < width; i++)
         {
-            if (mask & 0x01)
+            if (show_with_zh) ips160_set_region(x + i, y + 12 - ASCII_HEIGHT, x + i, y + 12);
+            else ips160_set_region(x + i, y, x + i, y + ASCII_HEIGHT);
+            mask = *(font + i);
+            for (j = 0; ASCII_HEIGHT > j; j++)
             {
-                ips160_write_16bit_data(pencolor);
+                if (mask & 0x01)
+                {
+                    ips160_write_16bit_data(pencolor);
+                }
+                else
+                {
+                    ips160_write_16bit_data(bgcolor);
+                }
+                mask >>= 1;
             }
-            else
+        }
+    }
+
+    else if (width == UNICODE_WIDTH)
+    {
+        for (i = 0; i < width; i ++)
+        {
+            ips160_set_region(x + i, y, x + i, y + (UNICODE_HEIGHT / 2 - 1));
+            mask = *(font + i);
+            for (j = 0; UNICODE_HEIGHT / 2 > j; j++)
             {
-                ips160_write_16bit_data(bgcolor);
+                if (mask & 0x01)
+                {
+                    ips160_write_16bit_data(pencolor);
+                }
+                else
+                {
+                    ips160_write_16bit_data(bgcolor);
+                }
+                mask >>= 1;
             }
-            mask >>= 1;
+        }
+        for (i = 0; i < width; i ++)
+        {
+            ips160_set_region(x + i, y + UNICODE_HEIGHT / 2, x + i, y + UNICODE_HEIGHT - 1);
+            mask = *(font + i + width);
+            for (j = 0; UNICODE_HEIGHT / 2 > j; j++)
+            {
+                if (mask & 0x01)
+                {
+                    ips160_write_16bit_data(pencolor);
+                }
+                else
+                {
+                    ips160_write_16bit_data(bgcolor);
+                }
+                mask >>= 1;
+            }
         }
     }
 }
 
-void ips160_show_string(uint16_t x, uint16_t y, char* ptrStr, uint16_t bgcolor, uint16_t pencolor)
+void ips160_show_string(uint16_t x, uint16_t y, char *ptrStr, uint16_t bgcolor, uint16_t pencolor, uint8_t show_with_zh)
 {
-    unsigned char temp_x, temp_y, temp_width, line_break = 0;
-    const uint8_t* font;
-    char ch[2];
-
+    uint8_t temp_x, temp_y, temp_width;
+    const uint8_t *font;
+    char ch[4];
+    uint32_t unicode = 0;
     temp_x = x;
     temp_y = y;
 
-    while (*ptrStr != '\0')
+    ch[0] = *ptrStr;
+
+    while (ch[0] != '\0')
     {
-        ch[0] = *ptrStr;
-        ptrStr++;
-        ch[1] = *ptrStr;
 
         if (ch[0] == '\n')
         {
             x = temp_x;
-            y += 12;
+            temp_y += 12;
+            ptrStr++;
         }
 
-        else if (ch[0] < 128)
+        else
         {
-            temp_width = get_font_model(ch, &font);
+            uint8_t char_bytes = get_utf8_char_length(ch[0]);
+            switch (char_bytes)
+            {
+            case 1:
+                for (uint8_t i = 0; i < char_bytes; i++)
+                {
+                    ch[i] = *ptrStr;
+                    ptrStr++;
+                }
+                utf8_to_unicode(ch, &unicode, char_bytes);
+                temp_width = get_font_model(unicode, &font, char_bytes);
+                break;
+
+            case 2:
+                for (uint8_t i = 0; i < char_bytes; i++)
+                {
+                    ch[i] = *ptrStr;
+                    ptrStr++;
+                }
+                utf8_to_unicode(ch, &unicode, char_bytes);
+                temp_width = get_font_model(unicode, &font, char_bytes);
+                break;
+
+            case 3:
+                for (uint8_t i = 0; i < char_bytes; i++)
+                {
+                    ch[i] = *ptrStr;
+                    ptrStr++;
+                }
+                utf8_to_unicode(ch, &unicode, char_bytes);
+                temp_width = get_font_model(unicode, &font, char_bytes);
+                break;
+
+            case 4:
+                for (uint8_t i = 0; i < char_bytes; i++)
+                {
+                    ch[i] = *ptrStr;
+                    ptrStr++;
+                }
+                utf8_to_unicode(ch, &unicode, char_bytes);
+                temp_width = get_font_model(unicode, &font, char_bytes);
+                break;
+
+            default:
+                ptrStr++;
+                continue;
+            }
 
             if (x >= 160)
             {
                 x = temp_x;
-                temp_y = temp_y + 12;
-                line_break = 1;
+                temp_y += 12;
             }
-            /*当前行显示*/
-            if (line_break == 0)
-            {
-                ips160_show_char(x, y, temp_width, font, bgcolor, pencolor);
-            }
-            /*需要换行*/
-            else
-            {
-                ips160_show_char(x, temp_y, temp_width, font, bgcolor, pencolor);
-            }
+            ips160_show_char(x, temp_y, temp_width, font, bgcolor, pencolor, show_with_zh);
             x += temp_width; //下一个字符的横坐标
         }
-        else if ((ch[0] > 160) && (ch[1] > 160)) //中文
-        {
-            ch[1] = *ptrStr;
-            temp_width = get_font_model(ch, &font);
-            if (x < 160 && y == temp_y) ips160_show_char(x, y, temp_width, font, bgcolor, pencolor);
-            else
-            {
-                x = temp_x;
-                temp_y = y + 12;
-                ips160_show_char(x, temp_y, temp_width, font, bgcolor, pencolor);
-            }
-            x += temp_width; //下一个字符的横坐标
-            ptrStr++;
-        }
+        ch[0] = *ptrStr;
+        unicode = 0;
     }
 }
 
@@ -325,7 +367,7 @@ void ips160_show_int(uint16_t x, uint16_t y, const int32_t dat, uint8_t num)
         dat_temp %= offset;
     }
     func_int_to_str(data_buffer, dat_temp);
-    ips160_show_string(x, y, data_buffer, IPS160_DEFAULT_BGCOLOR, IPS160_DEFAULT_PENCOLOR);
+    ips160_show_string(x, y, data_buffer, IPS160_DEFAULT_BGCOLOR, IPS160_DEFAULT_PENCOLOR, 0);
 }
 
 void ips160_show_uint(uint16_t x, uint16_t y, const uint32_t dat, uint8_t num)
@@ -345,7 +387,7 @@ void ips160_show_uint(uint16_t x, uint16_t y, const uint32_t dat, uint8_t num)
         dat_temp %= offset;
     }
     func_uint_to_str(data_buffer, dat_temp);
-    ips160_show_string(x, y, data_buffer, IPS160_DEFAULT_BGCOLOR, IPS160_DEFAULT_PENCOLOR);
+    ips160_show_string(x, y, data_buffer, IPS160_DEFAULT_BGCOLOR, IPS160_DEFAULT_PENCOLOR, 0);
 }
 
 void ips160_show_float(uint16_t x, uint16_t y, const double dat, uint8_t num, uint8_t pointnum)
@@ -362,7 +404,7 @@ void ips160_show_float(uint16_t x, uint16_t y, const double dat, uint8_t num, ui
     }
     dat_temp = dat_temp - ((int)dat_temp / (int)offset) * offset;
     func_double_to_str(data_buffer, dat_temp, pointnum);
-    ips160_show_string(x, y, data_buffer, IPS160_DEFAULT_BGCOLOR, IPS160_DEFAULT_PENCOLOR);
+    ips160_show_string(x, y, data_buffer, IPS160_DEFAULT_BGCOLOR, IPS160_DEFAULT_PENCOLOR, 0);
 }
 
 void ips160_show_rgb565_image(uint16_t x, uint16_t y, const uint16_t* image, uint16_t width, uint16_t height,

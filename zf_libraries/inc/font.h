@@ -22,6 +22,6 @@ typedef enum
     RGB565_66CCFF   = (0x665F),
 }rgb565_color_enum;
 
-extern const uint8_t      ascii_font_6x8[][6];
+extern const uint8_t       ascii_font_6x8[][6];
 
 #endif
