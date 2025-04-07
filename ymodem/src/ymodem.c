@@ -242,7 +242,6 @@ YmodemStatus ymodem_receive(YmodemFileInfo* file_info, const TCHAR* path)
                 packet_number & 0xFF))
             {
                 packet_number++;
-                send_byte(ACK);
                 if (file_info->file_size - bytes_written_total >= packet_size)
                 {
                     if (f_write(&recieve_file, &ymodem_receive_packet[3], packet_size, &bytes_written) != FR_OK)
@@ -251,7 +250,7 @@ YmodemStatus ymodem_receive(YmodemFileInfo* file_info, const TCHAR* path)
                         send_byte(CAN);
                         return YMODEM_ERROR;
                     }
-                    if (bytes_written_total % 4096 == 0)
+                    if (bytes_written_total % WRITE_BUFFER_SIZE == 0)
                     {
                         f_sync(&recieve_file);
                     }
@@ -268,6 +267,7 @@ YmodemStatus ymodem_receive(YmodemFileInfo* file_info, const TCHAR* path)
                     }
                     f_sync(&recieve_file);
                 }
+                send_byte(ACK);
                 bytes_written_total += bytes_written;
             }
         }

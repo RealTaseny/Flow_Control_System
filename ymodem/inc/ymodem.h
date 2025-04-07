@@ -24,6 +24,7 @@
 #define PACKET_OVERHEAD 5 // 3-byte header + 2-byte CRC
 #define MAX_ERRORS 5
 #define WAIT_MSENCOND 1000
+#define WRITE_BUFFER_SIZE 40960
 
 typedef enum {
     YMODEM_OK = 0,
