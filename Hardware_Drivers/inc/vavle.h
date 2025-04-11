@@ -1,7 +1,7 @@
 //
 // Created by Taseny on 25-4-5.
 //
-
+#pragma once
 #ifndef VAVLE_H
 #define VAVLE_H
 

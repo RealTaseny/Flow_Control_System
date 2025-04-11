@@ -3,6 +3,9 @@
 //
 
 #include "peripheral_init.h"
+
+#include <w25qxx_flash.h>
+
 #include "usart.h"
 #include "spi.h"
 #include "gpio.h"

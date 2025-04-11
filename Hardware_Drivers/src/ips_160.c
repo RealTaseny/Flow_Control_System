@@ -4,7 +4,7 @@ static uint16_t ips160_pencolor = IPS160_DEFAULT_PENCOLOR;
 static uint16_t ips160_bgcolor = IPS160_DEFAULT_BGCOLOR;
 static ips160_dir_enum ips160_display_dir = IPS160_DEFAULT_DISPLAY_DIR;
 static uint16_t ips160_x_max = 162;
-static uint16_t ips160_y_max = 132;
+static uint16_t ips160_y_max = 80;
 
 char display_string_buffer[128] = {0};
 
@@ -13,11 +13,12 @@ volatile uint8_t spi2_tx_complete = 0;
 static void ips160_write_command(const uint8_t command)
 {
     uint8_t data[1] = {command};
-    IPS160_DC(0);
+
+    IPS160_DC_PORT->BSRR = GPIO_PIN_14 << 16U;
     HAL_SPI_Transmit_DMA(IPS160_SPI_PORT, data, sizeof(data));
     while (!spi2_tx_complete);
     spi2_tx_complete = 0;
-    IPS160_DC(1);
+    IPS160_DC_PORT->BSRR = GPIO_PIN_14;
 }
 
 static void ips160_write_8bit_data(const uint8_t dat)
@@ -128,7 +129,7 @@ void ips160_set_dir(ips160_dir_enum dir)
     case IPS160_PORTAIT:
     case IPS160_PORTAIT_180:
         {
-            ips160_x_max = 132;
+            ips160_x_max = 80;
             ips160_y_max = 162;
         }
         break;
@@ -136,7 +137,7 @@ void ips160_set_dir(ips160_dir_enum dir)
     case IPS160_CROSSWISE_180:
         {
             ips160_x_max = 162;
-            ips160_y_max = 132;
+            ips160_y_max = 80;
         }
         break;
     }
@@ -336,7 +337,7 @@ void ips160_show_string(uint16_t x, uint16_t y, char *ptrStr, uint16_t bgcolor, 
                 continue;
             }
 
-            if (x >= 160)
+            if (x >= 162)
             {
                 x = temp_x;
                 temp_y += 12;
@@ -405,6 +406,35 @@ void ips160_show_float(uint16_t x, uint16_t y, const double dat, uint8_t num, ui
     dat_temp = dat_temp - ((int)dat_temp / (int)offset) * offset;
     func_double_to_str(data_buffer, dat_temp, pointnum);
     ips160_show_string(x, y, data_buffer, IPS160_DEFAULT_BGCOLOR, IPS160_DEFAULT_PENCOLOR, 0);
+}
+
+void ips160_show_binary_image (uint16_t x, uint16_t y, const uint8_t *image, uint16_t width, uint16_t height, uint16_t dis_width, uint16_t dis_height)
+{
+    uint32_t i = 0, j = 0;
+    uint8_t temp = 0;
+    uint32_t width_index = 0;
+    const uint8_t *image_temp;
+
+    ips160_set_region(x, y, x + dis_width - 1, y + dis_height - 1);             // 设置显示区域
+
+    for(j = 0; j < dis_height; j ++)
+    {
+        image_temp = image + j * height / dis_height * width / 8;               // 直接对 image 操作会 Hardfault 暂时不知道为什么
+        for(i = 0; i < dis_width; i ++)
+        {
+            width_index = i * width / dis_width;
+            temp = *(image_temp + width_index / 8);                             // 读取像素点
+            if(0x80 & (temp << (width_index % 8)))
+            {
+                ips160_write_16bit_data(RGB565_WHITE);
+            }
+            else
+            {
+                ips160_write_16bit_data(RGB565_BLACK);
+            }
+        }
+
+    }
 }
 
 void ips160_show_rgb565_image(uint16_t x, uint16_t y, const uint16_t* image, uint16_t width, uint16_t height,

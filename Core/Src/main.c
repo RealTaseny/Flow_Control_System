@@ -20,13 +20,13 @@
 #include "main.h"
 #include "cmsis_os.h"
 
-
-
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "fatfs.h"
 #include "peripheral_init.h"
 #include "ymodem.h"
+#include "utf8_to_unicode.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -72,25 +72,33 @@ int main(void)
   SystemClock_Config();
 
   peripheral_init();
-
+  ips160_show_binary_image(0, 0, 0, 0, 0, 0, 0);
   fatfs_init();
+  ips160_full(RGB565_BLACK);
+#if ENABLE_YMODEM == 0
+#if USE_CHINESE_FONT == 1
+  retUSER = f_open(&fontFile, CHINESE_FONT_LIB_PATH, FA_READ);
+#endif
+#endif
 
 #if ENABLE_YMODEM == 1
+  ips160_show_string(0 , 8, "Waiting for file recieveing...", RGB565_WHITE , RGB565_RED, 0);
   YmodemFileInfo file_info = {0};
   YmodemStatus status = ymodem_receive(&file_info, "FLASH:");
 #if USE_IPS_ASSERT == 1
-  ips160_clear();
+  //ips160_clear();
   sprintf(display_string_buffer, "File recieve status: %d", status);
-  ips160_show_string(0 ,0, display_string_buffer, RGB565_WHITE , RGB565_RED);
+  ips160_show_string(0 ,0, display_string_buffer, RGB565_WHITE , RGB565_RED, 0);
   HAL_Delay(DISPLAY_DELAY);
 #endif
   tree("FLASH:");
 #endif
 
+#if ENABLE_YMODEM == 0
   osKernelInitialize();
   freertos_init();
   osKernelStart();
-
+#endif
   for (;;);
 }
 

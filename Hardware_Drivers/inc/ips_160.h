@@ -1,3 +1,4 @@
+#pragma once
 #ifndef IPS_160_H__
 #define IPS_160_H__
 
@@ -25,7 +26,6 @@
 #define IPS160_RES_PORT GPIOB
 
 #define IPS160_RES(x)                   	((x) ? (HAL_GPIO_WritePin(IPS160_RES_PORT, IPS160_RES_PIN, GPIO_PIN_SET))	:	(HAL_GPIO_WritePin(IPS160_RES_PORT, IPS160_RES_PIN, GPIO_PIN_RESET)))
-#define IPS160_DC(x)                    	((x) ? (HAL_GPIO_WritePin(IPS160_DC_PORT, IPS160_DC_PIN, GPIO_PIN_SET))	:	(HAL_GPIO_WritePin(IPS160_DC_PORT, IPS160_DC_PIN, GPIO_PIN_RESET)))
 
 #define X_OFFSET 26
 #define Y_OFFSET 0
@@ -42,6 +42,9 @@ typedef enum
 #define IPS160_DEFAULT_PENCOLOR         (RGB565_RED    )
 #define IPS160_DEFAULT_BGCOLOR          (RGB565_WHITE  )
 
+#ifdef __cplusplus
+extern "C"{
+#endif
 void    ips160_clear                    (void);
 void    ips160_full                     (uint16_t color);
 void    ips160_set_brightness           (uint8_t brightness);
@@ -65,6 +68,8 @@ void    ips160_show_wave                (uint16_t x, uint16_t y, const uint16_t 
 void    ips160_init											(void);
 
 extern char display_string_buffer[128];
-
+#ifdef __cplusplus
+}
+#endif
 #endif
 

@@ -1,7 +1,7 @@
 //
 // Created by Taseny on 24-12-27.
 //
-
+#pragma once
 #ifndef YMODEM_H
 #define YMODEM_H
 

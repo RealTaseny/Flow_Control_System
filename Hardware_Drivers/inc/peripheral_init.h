@@ -1,7 +1,7 @@
 //
 // Created by Taseny on 25-4-2.
 //
-
+#pragma once
 #ifndef PERIPHERAL_INIT_H
 #define PERIPHERAL_INIT_H
 

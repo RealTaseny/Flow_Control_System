@@ -1,7 +1,7 @@
 //
 // Created by Taseny on 25-4-6.
 //
-
+#pragma once
 #ifndef KEY_H
 #define KEY_H
 

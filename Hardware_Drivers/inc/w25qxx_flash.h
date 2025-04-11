@@ -1,7 +1,7 @@
 //
 // Created by Taseny on 24-12-26.
 //
-
+#pragma once
 #ifndef W25QXX_FLASH_H
 #define W25QXX_FLASH_H
 

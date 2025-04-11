@@ -1,7 +1,7 @@
 //
 // Created by Taseny on 25-4-4.
 //
-
+#pragma once
 #ifndef FLOW_COUNTER_H
 #define FLOW_COUNTER_H
 

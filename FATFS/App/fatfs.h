@@ -28,16 +28,18 @@
 #include "user_diskio.h" /* defines USER_Driver as external */
 
 /* USER CODE BEGIN Includes */
-#include "ips_160.h"
+
 #include <stdlib.h>
 #include <string.h>
-
+#include "ips_160.h"
+#include "usart.h"
 /* USER CODE END Includes */
 
 extern uint8_t retUSER; /* Return value for USER */
 extern char USERPath[4]; /* USER logical drive path */
 extern FATFS USERFatFS; /* File system object for USER logical drive */
 extern FIL USERFile; /* File object for USER */
+extern FIL fontFile;
 
 void fatfs_init(void);
 

@@ -16,6 +16,10 @@
 #define UNICODE_HEIGHT 16
 #define FONT_CHAR_BYTES 24  // 每个字符24字节
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // 字库编码范围映射表
 typedef struct {
     uint32_t start;
@@ -26,6 +30,8 @@ typedef struct {
 uint8_t get_utf8_char_length(char ch);
 void utf8_to_unicode(const char *ptrStr, uint32_t* ptr_unicode, uint8_t char_bytes);
 uint16_t get_font_index(uint32_t unicode);
-uint8_t get_font_model(uint32_t unicode, const uint8_t** font, const uint8_t char_bytes);
-
+uint8_t get_font_model(uint32_t unicode, const uint8_t** font, uint8_t char_bytes);
+#ifdef __cplusplus
+}
+#endif
 #endif //UTF8_TO_UNICODE_H

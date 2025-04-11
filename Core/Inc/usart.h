@@ -31,7 +31,7 @@ extern "C" {
 extern UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN Private defines */
-#define ENABLE_YMODEM 0
+#define ENABLE_YMODEM 0           //USE 1 to enable YMODEM file recieve
 #define UART_BUFFER_SIZE 4096
 /* USER CODE END Private defines */
 

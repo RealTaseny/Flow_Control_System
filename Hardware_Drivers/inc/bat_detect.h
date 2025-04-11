@@ -1,7 +1,7 @@
 //
 // Created by Taseny on 25-4-4.
 //
-
+#pragma once
 #ifndef BAT_DETECT_H
 #define BAT_DETECT_H
 
