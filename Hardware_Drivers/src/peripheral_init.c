@@ -4,8 +4,6 @@
 
 #include "peripheral_init.h"
 
-#include <w25qxx_flash.h>
-
 #include "usart.h"
 #include "spi.h"
 #include "gpio.h"
@@ -16,6 +14,10 @@
 #include "pump.h"
 #include "vavle.h"
 #include "flow_counter.h"
+
+#include "menu.h"
+
+void* MENU;
 
 void peripheral_init(void)
 {

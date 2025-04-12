@@ -5,6 +5,9 @@
 #ifndef KEY_H
 #define KEY_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include "gpio.h"
 
 enum KEY_LIST
@@ -34,4 +37,7 @@ enum KEY_LIST
 
 uint8_t key_scan(void);
 
+#ifdef __cplusplus
+    }
+#endif
 #endif //KEY_H

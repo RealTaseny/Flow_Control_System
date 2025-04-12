@@ -15,18 +15,15 @@ static void ips160_write_command(const uint8_t command)
     uint8_t data[1] = {command};
 
     IPS160_DC_PORT->BSRR = GPIO_PIN_14 << 16U;
-    HAL_SPI_Transmit_DMA(IPS160_SPI_PORT, data, sizeof(data));
-    while (!spi2_tx_complete);
-    spi2_tx_complete = 0;
+    HAL_SPI_Transmit(IPS160_SPI_PORT, data, sizeof(data), HAL_MAX_DELAY);
+
     IPS160_DC_PORT->BSRR = GPIO_PIN_14;
 }
 
 static void ips160_write_8bit_data(const uint8_t dat)
 {
     uint8_t data[1] = {dat};
-    HAL_SPI_Transmit_DMA(IPS160_SPI_PORT, data, sizeof(data));
-    while (!spi2_tx_complete);
-    spi2_tx_complete = 0;
+    HAL_SPI_Transmit(IPS160_SPI_PORT, data, sizeof(data), HAL_MAX_DELAY);
 }
 
 void ips160_set_brightness(uint8_t brightness)
@@ -40,9 +37,7 @@ void ips160_write_16bit_data(const uint16_t dat)
     uint8_t data[2];
     data[0] = (dat >> 8) & 0xFF;
     data[1] = dat & 0xFF;
-    HAL_SPI_Transmit_DMA(IPS160_SPI_PORT, data, sizeof(data));
-    while (!spi2_tx_complete);
-    spi2_tx_complete = 0;
+    HAL_SPI_Transmit(IPS160_SPI_PORT, data, sizeof(data), HAL_MAX_DELAY);
 }
 
 static void ips160_set_region(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2)
@@ -102,9 +97,7 @@ void ips160_clear(void)
 
     for (uint16_t j = 0; j < ips160_x_max; j++)
     {
-        HAL_SPI_Transmit_DMA(IPS160_SPI_PORT, data, sizeof(data));
-        while (!spi2_tx_complete);
-        spi2_tx_complete = 0;
+        HAL_SPI_Transmit(IPS160_SPI_PORT, data, sizeof(data), HAL_MAX_DELAY);
     }
 }
 
@@ -334,6 +327,7 @@ void ips160_show_string(uint16_t x, uint16_t y, char *ptrStr, uint16_t bgcolor, 
 
             default:
                 ptrStr++;
+                ch[0] = *ptrStr;
                 continue;
             }
 
